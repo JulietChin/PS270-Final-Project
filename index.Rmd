@@ -12,3 +12,26 @@ output:
 ## Project thoughts
 
 I am interested in exploring data related to... I have no idea yet or have thought about it yet. Maybe I'll look into data on thrifting?
+
+03/01 - I am now interested in exploring Star Wars!
+
+```{r}
+library(tidyverse)
+
+starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
+
+head(starwars)
+```
+## Proposal Paragraph
+
+My research question asks whether gender predicts whether someone considers themselves a Star Wars fan. I hypothesize that men are more likely than women to identify as Star Wars fans. One theoretical explanation for this expectation is that science fiction media has historically been marketed more heavily toward men. If certain genres are framed as masculine-coded interests, men may be more likely to internalize fandom as part of their identity. As social scientists, we are interested in whether this broader pattern of gendered media consumption appears systematically in survey data.
+
+My explanatory variable of interest is gender, measured as a categorical survey response (e.g., Male or Female), which varies across respondents. My outcome variable is whether the respondent considers themselves a Star Wars fan, measured as a binary variable (Yes = 1, No = 0). I plan to use regression analysis to estimate whether gender significantly predicts the probability of identifying as a fan. If I observe that men are statistically more likely than women to report being fans, this would support my hypothesis. If there is no meaningful difference between genders, or if women are equally or more likely to identify as fans, that would provide evidence against my hypothesis.
+
+
+
+
+
+
+
+
