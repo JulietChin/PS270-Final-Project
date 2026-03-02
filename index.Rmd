@@ -13,7 +13,7 @@ output:
 
 I am interested in exploring data related to... I have no idea yet or have thought about it yet. Maybe I'll look into data on thrifting?
 
-03/01 - I am now interested in exploring Star Wars!
+03/01 - I am now interested in exploring Star Wars! I was watching Star Wars recently with my roommates and friends, in which it made me think about who is more likely to fans of certain franchise and/or movies based on the target audience. I feel people have been conditioned as young children to like certain movie or their genre by introducing them to gendered stereotypical ideals. 
 
 ```{r}
 library(tidyverse)
