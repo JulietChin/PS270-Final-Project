@@ -7,8 +7,6 @@ output:
     self_contained: true
 ---
 
-
-
 ## Project thoughts 
 
 I am interested in exploring data related to... I have no idea yet or have thought about it yet. Maybe I'll look into data on thrifting?
