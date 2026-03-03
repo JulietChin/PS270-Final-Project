@@ -2,8 +2,8 @@
 title: "PS270 Final Project"
 author: "Juliet Chin"
 description: "My final project"
-output:
-  distill::distill_article:
+output: 
+  html_document:
     self_contained: true
 ---
 
@@ -18,7 +18,7 @@ library(tidyverse)
 
 starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
 
-head(starwars)
+starwars[1:6, 1:10]
 ```
 ## Proposal Paragraph
 
