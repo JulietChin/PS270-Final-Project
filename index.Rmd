@@ -3,9 +3,9 @@ title: "PS270 Final Project"
 author: "Juliet Chin"
 description: My final project
 output:
-  pdf_document: default
   html_document:
     self_contained: true
+  pdf_document: default
 ---
 
 ## Project thoughts 

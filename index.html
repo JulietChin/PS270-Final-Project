@@ -492,6 +492,91 @@ whether gender is associated with fandom, which connects directly to my
 research question. If one group has a noticeably higher percentage, that
 would support the idea that Star Wars fandom may be shaped by gendered
 patterns of media exposure and socialization.</p>
+<pre class="r"><code>fan_model_data &lt;- starwars |&gt;
+  select(
+    gender = `Do you consider yourself to be a fan of the Star Wars film franchise?`,
+    sex = Gender
+  ) |&gt;
+  filter(!is.na(gender), !is.na(sex)) |&gt;
+  filter(sex %in% c(&quot;Male&quot;, &quot;Female&quot;)) |&gt;
+  mutate(
+    fan = if_else(gender == &quot;Yes&quot;, 1, 0),
+    male = if_else(sex == &quot;Male&quot;, 1, 0)
+  )
+
+model &lt;- glm(fan ~ male, data = fan_model_data, family = binomial)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = fan ~ male, family = binomial, data = fan_model_data)
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   0.4034     0.1024   3.938 8.21e-05 ***
+## male          0.5229     0.1487   3.515 0.000439 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1051.6  on 819  degrees of freedom
+## Residual deviance: 1039.1  on 818  degrees of freedom
+## AIC: 1043.1
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Write up: To test whether gender predicts Star Wars fandom, I ran a
+logistic regression with fan identity (1 = fan, 0 = not a fan) as the
+outcome and gender (1 = Male, 0 = Female) as the predictor. The results
+support my hypothesis: being male is a statistically significant
+positive predictor of Star Wars fandom (B = 0.52, p &lt; 0.001). Men
+have approximately 1.69 times higher odds of identifying as a Star Wars
+fan compared to women. This is consistent with the idea that science
+fiction media has historically been marketed more toward men, shaping
+gendered patterns of fandom identity.</p>
+<pre class="r"><code>library(knitr)
+
+results_table &lt;- data.frame(
+  Term = c(&quot;Intercept&quot;, &quot;Male (vs. Female)&quot;),
+  Estimate = c(0.4034, 0.5229),
+  Std_Error = c(0.1024, 0.1487),
+  P_Value = c(&quot;&lt; 0.001&quot;, &quot;&lt; 0.001&quot;)
+)
+
+kable(results_table, 
+      col.names = c(&quot;Term&quot;, &quot;Estimate&quot;, &quot;Std. Error&quot;, &quot;p-value&quot;),
+      caption = &quot;Logistic Regression: Gender as a Predictor of Star Wars Fandom&quot;)</code></pre>
+<table>
+<caption>Logistic Regression: Gender as a Predictor of Star Wars
+Fandom</caption>
+<thead>
+<tr class="header">
+<th align="left">Term</th>
+<th align="right">Estimate</th>
+<th align="right">Std. Error</th>
+<th align="left">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Intercept</td>
+<td align="right">0.4034</td>
+<td align="right">0.1024</td>
+<td align="left">&lt; 0.001</td>
+</tr>
+<tr class="even">
+<td align="left">Male (vs. Female)</td>
+<td align="right">0.5229</td>
+<td align="right">0.1487</td>
+<td align="left">&lt; 0.001</td>
+</tr>
+</tbody>
+</table>
+<p>Write up: To test whether gender predicts Star Wars fandom, I ran a
+logistic regression. The results support my hypothesis: being male is a
+statistically significant predictor of identifying as a Star Wars fan (p
+&lt; 0.001). This suggests that men are more likely than women to
+consider themselves Star Wars fans, which is consistent with the idea
+that science fiction has historically been marketed more toward men.</p>
 </div>
 
 
