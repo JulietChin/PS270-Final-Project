@@ -151,6 +151,59 @@ ggplot(fan_by_gender_detail, aes(x = gender, y = percent, fill = fan_response)) 
 
 The additional stacked bar chart provides more context by showing both fan and non-fan responses within each gender category. While men are more likely than women to identify as fans, women still demonstrate substantial engagement, with nearly 60 percent identifying as Star Wars fans. This suggests the gender gap is meaningful, but not absolute. Rather than showing that women are uninterested in Star Wars, this visualization suggests that both groups participate heavily, though men do so at somewhat higher rates. This deeper breakdown strengthens the analysis by showing that gender influences the likelihood of fandom without fully determining it.
 
+## Age and Gender Analysis
+
+```{r age-gender-analysis, echo=FALSE, message=FALSE, warning=FALSE}
+age_gender <- starwars |>
+  select(
+    fan_response = `Do you consider yourself to be a fan of the Star Wars film franchise?`,
+    gender = Gender,
+    age = `Age`
+  ) |>
+  filter(!is.na(fan_response), !is.na(gender), !is.na(age)) |>
+  filter(gender %in% c("Male", "Female")) |>
+  mutate(
+    fan = if_else(fan_response == "Yes", 1, 0),
+    age_group = case_when(
+      age %in% c("18-29") ~ "Young Adults (18-29)",
+      age %in% c("30-44") ~ "Middle Adults (30-44)",
+      age %in% c("45-60", "> 60") ~ "Older Adults (45+)",
+      TRUE ~ NA_character_
+    )
+  ) |>
+  filter(!is.na(age_group)) |>
+  group_by(age_group, gender) |>
+  summarize(fan_percent = mean(fan) * 100, .groups = "drop")
+
+ggplot(age_gender, aes(x = age_group, y = fan_percent, fill = gender)) +
+  geom_col(position = "dodge") +
+  geom_text(
+    aes(label = paste0(round(fan_percent, 1), "%")),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_fill_manual(values = c("Female" = "pink", "Male" = "lightblue")) +
+  labs(
+    title = "Star Wars Fandom by Gender Across Age Groups",
+    subtitle = "Comparing whether gender differences persist across generations",
+    x = "Age Group",
+    y = "Percent Who Identify as Star Wars Fans",
+    fill = "Gender"
+  ) +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 11)
+  )
+```
+
+This age-and-gender comparison adds a deeper layer to the project by showing that the relationship between gender and Star Wars fandom is not identical across generations. Among young adults (18–29), men are much more likely than women to identify as Star Wars fans (77.9% vs. 58.8%), suggesting one of the largest gender gaps in the sample. A similarly large gap appears among middle-aged adults (30–44), where 79.8% of men identify as fans compared to 63.4% of women. However, among older adults (45+), the gender gap narrows considerably: 64.5% of men and 58.9% of women identify as fans.
+
+These patterns suggest that age may shape how gender relates to fandom. In younger and middle generations, gender differences are more pronounced, possibly reflecting stronger gendered media marketing or differences in socialization. In contrast, older respondents show more similar fandom rates across gender. This strengthens the project by suggesting that gender alone does not fully explain Star Wars fandom; instead, gender may interact with generational experiences and cultural exposure. In short, the “gender gap” in Star Wars fandom appears strongest among younger groups and weakest among older adults, making age a meaningful additional dimension.
+
+
 ## Conclusion
 Overall, my findings support my hypothesis that men are more likely than women to identify as Star Wars fans. Both descriptive and statistical analyses consistently show that men report higher levels of fandom, and the regression results indicate this relationship is statistically significant. At the same time, the relatively high percentage of women who also identify as fans suggests that Star Wars fandom is widespread across genders, even if men report stronger identification overall. Because this analysis uses cross-sectional survey data and only includes gender as the primary predictor, it cannot establish causality and may omit important confounding variables such as age, socialization, or media exposure. Future research could improve this project by incorporating additional predictors, comparing generational trends, or examining how marketing and cultural norms shape fandom identity over time.
 
