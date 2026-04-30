@@ -6,44 +6,43 @@ output:
   html_document:
     self_contained: true
   pdf_document: default
+  
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+
+starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
+```
 ---
 
-## Project thoughts 
-
-I am interested in exploring data related to... I have no idea yet or have thought about it yet. Maybe I'll look into data on thrifting?
-
-03/01 - I am now interested in exploring Star Wars! I was watching Star Wars recently with my roommates and friends, in which it made me think about who is more likely to fans of certain franchise and/or movies based on the target audience. I feel people have been conditioned as young children to like certain movie or their genre by introducing them to gendered stereotypical ideals. 
-
-```{r}
-library(tidyverse)
-
-starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
-
-starwars[1:6, 1:10]
-```
-## Proposal Paragraph
+## Introduction
 
 My research question asks whether gender predicts whether someone considers themselves a Star Wars fan. I hypothesize that men are more likely than women to identify as Star Wars fans. One theoretical explanation for this expectation is that science fiction media has historically been marketed more heavily toward men. If certain genres are framed as masculine-coded interests, men may be more likely to internalize fandom as part of their identity. As social scientists, we are interested in whether this broader pattern of gendered media consumption appears systematically in survey data.
+ 
+## Data
 
-My explanatory variable of interest is gender, measured as a categorical survey response (e.g., Male or Female), which varies across respondents. My outcome variable is whether the respondent considers themselves a Star Wars fan, measured as a binary variable (Yes = 1, No = 0). I plan to use regression analysis to estimate whether gender significantly predicts the probability of identifying as a fan. If I observe that men are statistically more likely than women to report being fans, this would support my hypothesis. If there is no meaningful difference between genders, or if women are equally or more likely to identify as fans, that would provide evidence against my hypothesis.
+This project uses survey data from FiveThirtyEight’s Star Wars dataset, which contains respondents’ views on Star Wars fandom and demographic characteristics such as gender. Because this dataset surveys individuals at one point in time, this research design is cross-sectional. This means I can examine whether gender is associated with Star Wars fandom, though I cannot determine causality.
 
+My dependent variable is whether a respondent identifies as a Star Wars fan (Yes = 1, No = 0). My independent variable is gender, measured as Male or Female based on survey responses. I hypothesize that men will be more likely than women to identify as Star Wars fans. My hypothesis will be supported if men show a higher predicted probability of fandom and if the gender coefficient in my regression analysis is statistically significant.
 
-```{r}
-library(tidyverse)
-
-starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
-
+```{r outcome-plot, message=FALSE, warning=FALSE}
 fan_gender <- starwars |>
-  select(gender = `Do you consider yourself to be a fan of the Star Wars film franchise?`, sex = Gender) |>
-  filter(!is.na(gender), !is.na(sex)) |>
-  filter(sex %in% c("Male", "Female")) |>
-  mutate(fan = if_else(gender == "Yes", 1, 0)) |>
-  group_by(sex) |>
+  select(
+    fan_response = `Do you consider yourself to be a fan of the Star Wars film franchise?`,
+    gender = Gender
+  ) |>
+  filter(!is.na(fan_response), !is.na(gender)) |>
+  filter(gender %in% c("Male", "Female")) |>
+  mutate(fan = if_else(fan_response == "Yes", 1, 0)) |>
+  group_by(gender) |>
   summarize(fan_percent = mean(fan) * 100, .groups = "drop")
 
-ggplot(fan_gender, aes(x = sex, y = fan_percent, fill = sex)) +
+ggplot(fan_gender, aes(x = gender, y = fan_percent, fill = gender)) +
   geom_col(width = 0.6) +
-  scale_fill_manual(values = c("Male" = "lightblue", "Female" = "pink")) +
+  scale_fill_manual(
+    values = c("Male" = "lightblue", "Female" = "pink"),
+    guide = "none"
+  ) +
   labs(
     title = "Star Wars Fandom by Gender",
     x = "Gender",
@@ -53,53 +52,48 @@ ggplot(fan_gender, aes(x = sex, y = fan_percent, fill = sex)) +
   theme_minimal()
 ```
 
+
 Write up: 
-This graph shows the percent of male and female respondents who said they consider themselves Star Wars fans. It helps visualize whether gender is associated with fandom, which connects directly to my research question. If one group has a noticeably higher percentage, that would support the idea that Star Wars fandom may be shaped by gendered patterns of media exposure and socialization.
+This plot shows the main outcome variable, Star Wars fandom, by gender. About 60 percent of women in the cleaned sample identify as Star Wars fans, compared to about 72 percent of men. This pattern supports my hypothesis descriptively because men report higher levels of Star Wars fandom than women.
 
+## Results
 
-```{r}
+```{r regression-table, message=FALSE, warning=FALSE}
 fan_model_data <- starwars |>
   select(
-    gender = `Do you consider yourself to be a fan of the Star Wars film franchise?`,
-    sex = Gender
+    fan_response = `Do you consider yourself to be a fan of the Star Wars film franchise?`,
+    gender = Gender
   ) |>
-  filter(!is.na(gender), !is.na(sex)) |>
-  filter(sex %in% c("Male", "Female")) |>
+  filter(!is.na(fan_response), !is.na(gender)) |>
+  filter(gender %in% c("Male", "Female")) |>
   mutate(
-    fan = if_else(gender == "Yes", 1, 0),
-    male = if_else(sex == "Male", 1, 0)
+    fan = if_else(fan_response == "Yes", 1, 0),
+    male = if_else(gender == "Male", 1, 0)
   )
 
 model <- glm(fan ~ male, data = fan_model_data, family = binomial)
-summary(model)
-```
 
-Write up: 
-To test whether gender predicts Star Wars fandom, I ran a logistic regression with fan identity (1 = fan, 0 = not a fan) as the outcome and gender (1 = Male, 0 = Female) as the predictor. The results support my hypothesis: being male is a statistically significant positive predictor of Star Wars fandom (B = 0.52, p < 0.001). Men have approximately 1.69 times higher odds of identifying as a Star Wars fan compared to women. This is consistent with the idea that science fiction media has historically been marketed more toward men, shaping gendered patterns of fandom identity.
-
-
-```{r}
-library(knitr)
-
-results_table <- data.frame(
-  Term = c("Intercept", "Male (vs. Female)"),
-  Estimate = c(0.4034, 0.5229),
-  Std_Error = c(0.1024, 0.1487),
-  P_Value = c("< 0.001", "< 0.001")
+regression_table <- tibble(
+  Term = c("Intercept", "Male"),
+  Estimate = round(coef(summary(model))[, "Estimate"], 3),
+  `Standard Error` = round(coef(summary(model))[, "Std. Error"], 3),
+  `P-value` = if_else(
+  coef(summary(model))[, "Pr(>|z|)"] < 0.001,
+  "<0.001",
+  as.character(round(coef(summary(model))[, "Pr(>|z|)"], 3))
+)
 )
 
-kable(results_table, 
-      col.names = c("Term", "Estimate", "Std. Error", "p-value"),
-      caption = "Logistic Regression: Gender as a Predictor of Star Wars Fandom")
+kable(
+  regression_table,
+  caption = "Logistic Regression Predicting Star Wars Fandom"
+)
 ```
 
-Write up:
-To test whether gender predicts Star Wars fandom, I ran a logistic regression. The results support my hypothesis: being male is a statistically significant predictor of identifying as a Star Wars fan (p < 0.001). This suggests that men are more likely than women to consider themselves Star Wars fans, which is consistent with the idea that science fiction has historically been marketed more toward men.
+To test whether gender predicts Star Wars fandom, I ran a logistic regression with fan identity (1 = fan, 0 = not a fan) as the outcome and gender (1 = Male, 0 = Female) as the predictor. The results support my hypothesis: being male is a statistically significant positive predictor of Star Wars fandom (B = 0.52, p < 0.001). Men have approximately 1.69 times higher odds of identifying as a Star Wars fan compared to women. This is consistent with the idea that science fiction media has historically been marketed more toward men, shaping gendered patterns of fandom identity. However, I do not interpret this relationship as causal because this is cross-sectional survey data and the model does not account for other possible factors, such as age, childhood media exposure, or broader media interests.
 
-
-
-
-
+## Conclusion
+Overall, my findings support my hypothesis that men are more likely than women to identify as Star Wars fans. Both the descriptive bar plot and logistic regression show that men report significantly higher levels of Star Wars fandom than women. However, because this analysis uses cross-sectional survey data and only includes gender as a predictor, I cannot conclude that gender itself causes fandom differences. Other factors, such as age, socialization, or broader media exposure, may also shape this relationship. Future research could improve this analysis by including additional variables and testing whether gender remains significant after accounting for these potential confounding factors.
 
 
 
