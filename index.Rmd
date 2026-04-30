@@ -17,7 +17,7 @@ starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
 ## Introduction
 Does gender shape whether someone proudly calls themselves a Star Wars fan? In this project, I explore whether men and women differ in how likely they are to identify as fans of one of the world’s most iconic sci-fi franchises. My hypothesis is simple: men may be more likely than women to identify as Star Wars fans.
 
-Why might this be the case? For decades, science fiction has often been marketed more heavily toward men, from action figures to blockbuster promotions. If boys and men are more frequently encouraged to engage with sci-fi media, they may also be more likely to incorporate fandom into their identity. In other words: are men actually bigger Star Wars fans, or have they just been socially nudged toward that galaxy far, far away?
+Why might this be the case? For decades, science fiction has often been marketed more heavily toward men, from action figures to blockbuster promotions. If boys and men are more frequently encouraged to engage with sci-fi media, they may also be more likely to incorporate fandom into their identity. In other words: are men genuinely more likely to identify as Star Wars fans, or have they just been socially nudged toward that galaxy far, far away?
 
 Using survey data, this project examines whether this gender gap appears in real responses and whether gender meaningfully predicts Star Wars fandom. 
 
