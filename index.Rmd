@@ -6,14 +6,13 @@ output:
   html_document:
     self_contained: true
   pdf_document: default
-  
+---
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(knitr)
 
 starwars <- read_csv("StarWars.csv", show_col_types = FALSE)
 ```
----
 
 ## Introduction
 
